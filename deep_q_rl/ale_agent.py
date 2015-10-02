@@ -15,6 +15,8 @@ import numpy as np
 
 import ale_data_set
 
+import pipes
+import subprocess
 import sys
 sys.setrecursionlimit(10000)
 
@@ -39,7 +41,7 @@ class NeuralAgent(object):
         self.image_height = self.network.input_height
 
         # CREATE A FOLDER TO HOLD RESULTS
-        time_str = time.strftime("_%m-%d-%H-%M_", time.gmtime())
+        time_str = time.strftime("_%m-%d-%H-%M-%S_", time.gmtime())
         self.exp_dir = self.exp_pref + time_str + \
                        "{}".format(self.network.lr).replace(".", "p") + "_" \
                        + "{}".format(self.network.discount).replace(".", "p")
@@ -48,6 +50,15 @@ class NeuralAgent(object):
             os.stat(self.exp_dir)
         except OSError:
             os.makedirs(self.exp_dir)
+
+        # Record command line and repository info.
+        with open(os.path.join(self.exp_dir, 'cmdline'), 'w') as f:
+            f.write(' '.join(pipes.quote(x) for x in sys.argv))
+            f.write('\n')
+        with open(os.path.join(self.exp_dir, 'git-status'), 'w') as f:
+            f.write(subprocess.check_output(['git', 'status']))
+        with open(os.path.join(self.exp_dir, 'git-diff'), 'w') as f:
+            f.write(subprocess.check_output(['git', 'diff', 'HEAD']))
 
         self.num_actions = self.network.num_actions
 
