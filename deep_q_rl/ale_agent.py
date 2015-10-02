@@ -55,6 +55,8 @@ class NeuralAgent(object):
         with open(os.path.join(self.exp_dir, 'cmdline'), 'w') as f:
             f.write(' '.join(pipes.quote(x) for x in sys.argv))
             f.write('\n')
+        with open(os.path.join(self.exp_dir, 'git-rev-parse'), 'w') as f:
+            f.write(subprocess.check_output(['git', 'rev-parse', 'HEAD']))
         with open(os.path.join(self.exp_dir, 'git-status'), 'w') as f:
             f.write(subprocess.check_output(['git', 'status']))
         with open(os.path.join(self.exp_dir, 'git-diff'), 'w') as f:
